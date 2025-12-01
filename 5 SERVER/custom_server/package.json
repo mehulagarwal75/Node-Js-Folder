@@ -1,0 +1,13 @@
+{
+  "name": "custom-server",
+  "version": "1.0.0",
+  "description": "A simple Node.js HTTP server",
+  "main": "myServer.js",
+  "scripts": {
+    "start": "node myServer.js",
+    "dev": "nodemon myServer.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
