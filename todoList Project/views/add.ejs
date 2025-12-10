@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Task</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0b0e;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated mesh gradient background */
+        .bg-gradient {
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            animation: mesh 20s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes mesh {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            33% {
+                transform: translate(5%, 5%) rotate(5deg);
+            }
+            66% {
+                transform: translate(-5%, 5%) rotate(-5deg);
+            }
+        }
+
+        /* Grid pattern overlay */
+        .grid-pattern {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .form-card {
+            background: rgba(15, 16, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 48px 40px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+        }
+
+        .header-section {
+            margin-bottom: 36px;
+        }
+
+        .icon-badge {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .icon-badge svg {
+            width: 28px;
+            height: 28px;
+            stroke: #8b5cf6;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .description {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-label .required {
+            color: #ec4899;
+            font-size: 16px;
+        }
+
+        .input-field,
+        .select-field {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(30, 32, 40, 0.6);
+            border: 1.5px solid rgba(139, 92, 246, 0.15);
+            border-radius: 12px;
+            font-size: 15px;
+            color: #e2e8f0;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .input-field::placeholder {
+            color: #64748b;
+        }
+
+        .input-field:focus,
+        .select-field:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.05);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        .input-field:hover:not(:focus),
+        .select-field:hover:not(:focus) {
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .select-field {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        .select-field option {
+            background: #1e2028;
+            color: #e2e8f0;
+        }
+
+        .textarea-field {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(30, 32, 40, 0.6);
+            border: 1.5px solid rgba(139, 92, 246, 0.15);
+            border-radius: 12px;
+            font-size: 15px;
+            color: #e2e8f0;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .textarea-field::placeholder {
+            color: #64748b;
+        }
+
+        .textarea-field:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.05);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        .textarea-field:hover:not(:focus) {
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .date-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+            border: 1.5px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        /* Chrome, Safari, Edge date picker styling */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: invert(0.6) sepia(1) saturate(5) hue-rotate(230deg);
+            opacity: 0.8;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .form-card {
+                padding: 36px 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .date-row {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .button-group {
+                flex-direction: column-reverse;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-gradient"></div>
+    <div class="grid-pattern"></div>
+
+    <div class="main-container">
+        <div class="form-card">
+            
+            <div class="header-section">
+                <div class="icon-badge">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 11l3 3L22 4"></path>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                    </svg>
+                </div>
+                <h1>Create New Task</h1>
+                <p class="description">Fill in the details below to add a new task to your workflow</p>
+            </div>
+
+            <form method="POST" action="/addData">
+                <div class="form-section">
+
+                    <div class="input-group">
+                        <label class="input-label">
+                            Task Name
+                            <span class="required">*</span>
+                        </label>
+                        <input type="text" name="Name" class="input-field" required placeholder="e.g., Complete project documentation">
+                    </div>
+
+                    <div class="date-row">
+                        <div class="input-group">
+                            <label class="input-label">
+                                Start Date
+                                <span class="required">*</span>
+                            </label>
+                            <input type="date" name="AssignDate" class="input-field" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">
+                                Due Date
+                                <span class="required">*</span>
+                            </label>
+                            <input type="date" name="DueDate" class="input-field" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">
+                            Priority Level
+                            <span class="required">*</span>
+                        </label>
+                        <select name="priority" class="select-field" required>
+                            <option value="" disabled selected>Choose priority level</option>
+                            <option value="low">🟢 Low Priority</option>
+                            <option value="medium">🟡 Medium Priority</option>
+                            <option value="high">🔴 High Priority</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">
+                            Current Status
+                            <span class="required">*</span>
+                        </label>
+                        <select name="status" class="select-field" required>
+                            <option value="" disabled selected>Select current status</option>
+                            <option value="pending">⏳ Pending</option>
+                            <option value="in-progress">🔄 In Progress</option>
+                            <option value="completed">✅ Completed</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">
+                            Category
+                        </label>
+                        <select name="category" class="select-field">
+                            <option value="" disabled selected>Choose a category</option>
+                            <option value="work">💼 Work</option>
+                            <option value="personal">🏠 Personal</option>
+                            <option value="shopping">🛒 Shopping</option>
+                            <option value="health">💪 Health & Fitness</option>
+                            <option value="study">📚 Study</option>
+                            <option value="other">📌 Other</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">
+                            Description
+                        </label>
+                        <textarea name="description" class="textarea-field" rows="4" placeholder="Add additional details about this task..."></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">
+                            Assigned To
+                        </label>
+                        <input type="text" name="assignedTo" class="input-field" placeholder="e.g., John Doe">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">
+                            Tags
+                        </label>
+                        <input type="text" name="tags" class="input-field" placeholder="e.g., urgent, client-work, design">
+                    </div>
+
+                </div>
+
+                <div class="button-group">
+                    <a href="/" class="btn btn-secondary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 18l-6-6 6-6"/>
+                        </svg>
+                        View Tasks
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Create Task
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
